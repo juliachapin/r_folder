@@ -1,0 +1,239 @@
+---
+title: "Precision, normality, and some graphs"
+author: "YOUR NAME GOES HERE"
+date: "THE DATE GOES HERE"
+output: word_document
+---
+
+## Introduction
+
+This portion of the assignment will help you learn to:
+
+9.	Use R to calculate measures of precision.
+10.	Differentiate between parametric and non-parametric data, and classify datasets according to each using goodness-of-fit tests and diagnostic plots in R.
+11.	Apply the best data transformation to a given data set, or description of a data set, to result in a more normal distribution.
+12.	Use R to generate data visualizations, including scatterplots, barplots, and boxplots. 
+
+## Set up workspace with special function libraries
+
+```{r warning=FALSE, message = FALSE'}
+library(tidyverse)
+```
+
+## Import data
+
+These data in Aguadilla_Fruit_Phenology_for_R.csv are of the total fruit produced by plants at SY’s research site in Aguadilla, Puerto Rico. Import it here, call it **afp**, and use the head() function to show the first six lines of the dataframe.
+
+```{r}
+
+```
+
+*Month/Day/Year* – the date in which the data were collected
+
+*Plot name* – the name given to the location where the data were collected
+
+*Tree ID* – the identifier given to the plant from which the data were collected
+
+*Species* – the scientific name for the plant
+
+*Tag* – the label on each plant
+
+*Total Fruit* – the number of fruits counted or estimated on each plant
+
+*Ripe Fruit* – whether or not the fruit on the plant was ripe
+
+*Green Fruit* – whether or not the fruit on the plant was green
+
+*Flowers and Buds* – whether or not the plant had flowers and buds
+
+*X coordinate and Y coordinate* – the GPS (lat/long) location for each plant
+
+## Subset data
+We will work with a subset. Complete the code chunk below, using filter() to extract only the ROWS for *Clusia rosea*. We'll store the extract in a new dataframe - clu.
+
+```{r}
+clu <- afp %>% 
+ 
+
+head(clu)
+```
+
+## Standard error of the mean (SEM)
+
+SEM is both a measure of dispersion and a measure of precision. SEM quantifies the precision of the mean by estimating the standard deviation of a sampling distribution. It is calculated by dividing the standard deviation by the square root of the number of observations.
+
+We have to write our own equation (no built-in function in R). The general form is 
+
+SEM <- sd(x)/sqrt(length(x))
+
+To calculate the SEM of total fruit produced by *Clusia rosea* in this experiment revise the code chunk below by replacing the Xs with the correct objects. Remember that you are not calculating the SEM of clu, the dataframe, but of the column with the Total Fruit counts.
+
+```{r}
+SEM <- sd(X)/sqrt(length(X))
+SEM
+```
+
+## 95% confidence limits (confidence intervals)
+
+A 95% confidence interval is a range of values in which you can be 95% certain contains the true mean of the population. (Note:  A common misinterpretation of 95% CIs is "a range that contains 95% of the values." Wrong!)
+
+We will use the qt() function, and the SEM you calculated in the previous code chunk. The general form is
+
+CI95 <- qt(0.975, df = n - 1) * SEM
+
+where n is the length of the vector (i.e., array, column) that we are calculating the CI for. Complete the code for calculating the length (see previous code chunk for a hint) of the clu total fruit counts vector in the chunk below. The CI code is already written for you. 
+
+```{r}
+n <-  
+CI95 <- qt(0.975, df = n - 1) * SEM
+CI95
+```
+
+## A cautionary note on SEM and 95% CI
+
+The way that SEM and 95% CI are reported are
+1. mean +/- SEM or mean +/- 95% CI
+2. (lower, upper values)
+
+This implies that there is symmetry in our data distribution. Standard deviation, variance, standard error of the mean, and the 95% confidence interval all rely on the mean, and for these measures to represent the variability of our data, the mean must be a good measure of central tendency. If your data are not normally distributed, then these measures of variability are not going to work well. You might want to report percentiles (interquartile range) instead. 
+
+## Testing for normality
+
+There are a few techniques for detecting deviations from normality. Data are noisy, especially when the sample size is small, so your data might not follow a perfect bell curve when you examine the histogram. Having multiple tools at hand are thus necessary!
+
+### Graphical methods
+
+Diagnostic plots can be drawn with functions in the "UsingR" package. Remove the # to install this package in the code chunk below, and turn it off by replacing the # after installation.
+
+```{r warning=FALSE}
+#install.packages("UsingR")
+library(UsingR)
+```
+
+We will use the function simple.eda(). The "eda" is Exploratory Data Analysis. Revise the code chunk below if needed (check variable name matches yours) to create diagnostic plots for the total fruit of *Clusia rosea.*
+
+```{r}
+simple.eda(clu$Total_Fruit)
+```
+You should see three plots. The first is a histogram, which you already know about. You're looking for a bell curve, which you should not see with the *Clusia* data set. The second you also already know about - a boxplot - which also shows a lack of symmetry, and probably right-skew. The third is a new one. It is called a quantile-quantile plot, or QQ for short. What this plot does is takes the quantiles of the data and plots it as circles, and then generates quantiles from a sample with a normal distribution and plots that as a line. If the sample circles do not match up well with the line, the data are not normally distributed. We also use "nonparametric" to describe a data distribution that is not normally distributed.
+
+### Formal tests
+
+The eyeball tests that we just conducted are actually pretty good. But there are also formal tests to examine the goodness-of-fit of our data to a normal distribution. We are about to do our first statistical test -  The **Shapiro-Wilk** test for normality. 
+
+It relies on the following two hypotheses:
+Null hypothesis - The data are sampled from a population with a normal distribution
+Alternate hypothesis - The data are sampled from a population that does not have a normal distribution.
+
+Revise the code chunk below if needed (check variable name matches yours) to obtain the output of a Shapiro-Wilk test on the total fruit of *Clusia rosea*.
+```{r}
+shapiro.test(clu$Total_Fruit)
+```
+To interpret the output, we examine the p-value. The p-value is the probability that the null hypothesis is true. The p-value we obtained is super small. What does this mean about the distribution of total fruit of *Clusia rosea*?
+
+>Answer:  REPLACE THIS TEXT WITH YOUR EXPLANATION.
+
+## Data transformations
+
+We can try to transform the *Clusia rosea* total fruit count to obtain a normal distribution. The right skew suggests that a log transformation is appropriate.
+
+Complete the code chunk below if needed (check variable name matches yours) to make a new column that contains the natural log of total fruits for *Clusia rosea*. See [QuickR](https://www.statmethods.net/management/functions.html) for how to calculate natural logs and other similar functions.
+
+```{r}
+clu$lnfruit <- log(clu$Total_Fruit)
+```
+
+### YOUR TURN:  Use both graphical and formal tests to determine if the transformed data are normal
+
+```{r}
+# USE THIS CODE CHUNK TO DETERMINE IF clu$lnfruit HAS A NORMAL DISTRIBUTION
+```
+
+>Answer:  REPLACE THIS TEXT WITH YOUR INTERPRETATION OF THE TESTS.
+
+
+### YOUR TURN:  Try ONE other transformation and test to see if it results in a normal distribution.
+
+```{r}
+# USE THIS CODE CHUNK TO TRY ONE OTHER TRANFORMATION AND TEST IF IT GENERATES A NORMAL DISTRIBUTION
+```
+
+>Answer:  REPLACE THIS TEXT WITH YOUR INTERPRETATION OF THE TESTS.
+
+## Data visualizations
+
+For this exercise, we will try just a few basic graphs that you can use to start exploring your project data sets, in addition to the histograms you learned about last time.
+
+### Boxplots
+
+Boxplots serve a similar purpose as histograms do - showing the distribution of the data. But, they can do a more compact job, which allows you to make some initial comparisons of different groupings of data.
+
+Here we will compare the total fruit counts of *Clusia rosea* to *Randia aculeata*. 
+
+First, create a subset by filtering the *Clusia* and *Randia* rows. 
+
+```{r}
+cluran <- afp %>% 
+  filter(Species == "Randia aculeata"| Species == "Clusia rosea") # note the use of the vertical symbol 
+```
+
+Now here's the boxplot.
+
+```{r}
+ggplot(cluran) +
+  geom_boxplot(aes(x = Species, y = Total_Fruit))
+```
+
+#### YOUR TURN:  Improve the boxplot
+
+Review the previous tutorial and examine the help file (?geom_boxplot) to add elements that would make a better boxplot that has all of the things that are missing from this graph (e.g., informative axes). If you want, you can make each box a different color - see if you can figure that out.
+
+```{r}
+
+```
+
+### Scatterplots
+
+Scatterplots show the relationship between two continuous variables. Let's make some plots of fruiting phenology of *Clusia rosea*, which is the change in fruit production during a year.
+
+Inspect the code chunk below to see if you can recognize the similar structure of syntax for making the boxplot.
+
+```{r}
+ggplot(clu) +
+  geom_point(aes(x = as.factor(Month), y=Total_Fruit)) # we need R to consider Month as a categorical, not continuous variable. Try without as.factor() to see why
+```
+
+#### YOUR TURN:  Improve the scatterplot
+
+Make a better scatterplot that has all of the things that are missing from this graph. 
+
+```{r}
+
+```
+
+Write a figure caption below. In your caption, orient the viewer to the elements of the graph (what is being plotted), and interpret the pattern of fruit production over the course of a year in *Clusia rosea.*
+
+> Answer: REPLACE THIS TEXT WITH YOUR FIGURE CAPTION
+
+### YOUR TURN: Make boxplots and scatterplots
+
+Make a boxplot of two other species' total fruit counts in the code chunk below. Explain your thought process using # comments inside of the code chunk for each step.
+
+```{r}
+
+```
+
+>Answer: REPLACE THIS TEXT WITH YOUR FIGURE CAPTION
+
+Make a scatterplot of one other species' fruiting phenology in the code chunk below. Explain your thought process using # comments inside of the code chunk for each step.
+
+```{r}
+
+```
+
+>Answer: REPLACE THIS TEXT WITH YOUR FIGURE CAPTION
+
+## Upload your rendered Word document and completed RMD file
+
+Remember to check that you have revised the author name, and have retained all the > so that your grader can easily find your answers to the questions. Make a Word document, and upload both the Word document and RMD file to Brightspace.
+

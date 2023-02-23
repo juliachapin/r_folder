@@ -1,0 +1,291 @@
+---
+title: "Central tendency & variation tutorial"
+author: "YOUR NAME GOES HERE"
+date: "THE DATE GOES HERE"
+output: word_document
+---
+
+
+# Measures of central tendency and variation
+
+These exercises are designed to help you with these **Getting to Know the Data** objectives:
+
+5. List, define, and interpret measures of central tendency: mode, median, mean, skew, and kurtosis.
+6. List, define, and interpret measures of variation:  range, percentile, variance, standard deviation, and coefficient of variation.
+8. Use R to calculate and graphically display measures of central tendency and variation.
+
+***
+
+## Set up workspace with special function libraries
+
+```{r warning=FALSE}
+library(tidyverse)
+```
+
+## Data set:  Home range and body mass
+
+We will be working with a data set of 569 animals.
+
+Data set was modified from: Tamburello, Natascia; Côté, Isabelle M.; Dulvy, Nicholas K. (2015), Data from: Energy and the scaling of animal space use, Dryad, Dataset, https://doi.org/10.5061/dryad.q5j65
+
+Check the usual requirements for your working directory. We will name the dataframe "hrd" after HomeRangeDatabase in the csv file name. 
+
+```{r}
+hrd <- read.csv("modified_Tamburelloetal_HomeRangeDatabase.csv", header = T)
+
+head(hrd)
+```
+
+Why was it a good idea to use the code in line 31 rather than hrd?
+
+> Answer:  TYPE YOUR ANSWER HERE
+
+***
+
+*taxon* - Broad grouping for the animal
+
+*common.name* - The animal's common name
+
+*class, order, family, genus, species* - These five variables show the animal's scientific classification
+
+*primarymethod* - method by which the data were collected (telemetry, mark-recapture, direct observation, radio-tagging, etc.)
+
+*N* - the number of individuals that was used to calculate mean body mass and home range size (next variables)
+
+*mean.mass.g* - mean body mass for the animal
+
+*mean.hra.m2* - mean home range size for the animal, in square meters
+
+*realm* - habitat
+
+*thermoregulation* - thermoregulatory strategy for the animal (e.g., ectotherm, endotherm)
+
+*locomotion* - how the animal moves through its habitat (e.g., swimming, flying, walking)
+
+*trophic.guild* - trophic guild of the animal (herbivore, carnivore)
+
+*dimension* - whether home range size was measured in 2 or 3 dimensions
+
+We are mostly going to work with body mass today.
+
+***
+
+## Quickly get some measures of central tendency and variation
+
+We actually already know how to get some measures of central tendency and variation! Run the code below, and use it to check the values you obtain in successive steps.
+
+```{r}
+summary(hrd)
+```
+Let's take a closer look at what you just produced for numeric variables. 
+
+The **first quartile** (1st. Qu.) is the 25th percentile, and the **third quartile** is the 75th percentile. The first quartile (25%) is one fourth of the way from the smallest observation (**Min.**) to the largest observation (**Max.**). It divides the sample data in such a way that 25% of the values are less than the first quartile and 75% are more than first quartile. The third quartile (75%) is three fourths of the way from the smallest to to largest observations. It divides the sample data in such a way that 75% of the values are less than third quartile and 25% of the values are more than the third quartile. *Note that a quartile is just one specific example of a quantile - the first, second, and third quartiles of a set of data are just the 25th, 50th, and 75th percentiles of that data. A quantile could be any percentile value (33rd, 68th, etc.).*
+
+The **median** is the middle measurement of the set of measurements, and the **mean** is the arithmetic mean (the sum of all measurements divided by the number of measurements).
+
+## Central tendency
+
+### Mean
+
+You already know how to calculate a mean! Calculate the mean body weight in the code chunk below.
+
+```{r}
+
+```
+
+Refer to Line 68's summary() output above - do the two values match?
+
+>Answer:  REPLACE THIS TEXT WITH YOUR ANSWER
+
+### Median
+
+```{r}
+median(hrd$mean.mass.g, na.rm = TRUE)
+```
+
+Calculate the difference between the mean and median for body weight.
+```{r}
+
+```
+
+Did you get 34272 g? What does this difference between the mean and median values suggest about the shape of the animal body weight distribution?
+
+>Answer:  TYPE YOUR ANSWER HERE
+
+### Mode
+
+R does not have a base function for calculating the mode. Calculating the mode for a continuous variable isn't that useful, so we will examine the mode for hrd$locomotion using a two-step process:
+
+1. Make a table of the variable
+```{r}
+tab <- table(hrd$locomotion) # counts up all the instances of a particular weight value
+tab # calls the table we just made and prints it out for us to see
+```
+
+
+2. Get the column levels (type of locomotion) that match the most frequent instances.
+```{r}
+names(tab)[which(tab==max(tab))]
+```
+
+What do these results tell you about the dataset with regard to locomotion?
+
+>Answer:  TYPE YOUR ANSWER HERE
+
+
+*FREE KNOWLEDGE FOR YOU* You could combine all the previous steps by writing your OWN FUNCTION! If this makes your eyes cross and brain ache, don't worry. You can pretend you never saw this code chunk and the chunk after this one.
+```{r}
+mode = function(x){ 
+    ta = table(x)
+    tam = max(ta)
+    if (all(ta == tam))
+         mod = NA
+    else
+         if(is.numeric(x))
+    mod = as.numeric(names(ta)[ta == tam])
+    else
+         mod = names(ta)[ta == tam]
+    return(mod)
+}
+```
+
+If you plan to use this mode function, you always have to run the code chunk above, before running the code chunk below.
+
+```{r}
+mode(hrd$locomotion)
+```
+
+Did you get the same answer as with the two-step process? I hope so!
+
+### Skewness
+
+R also does not have a base function for calculating skewness. You need the e1071 package to obtain skewness.
+
+```{r}
+install.packages("e1071") # Note that the package name is in quotes! 
+#remember to turn this off by putting a # at the beginning of line 165 before rendering to HTML or DOCX. I suggest you do it right after you run it.
+```
+
+Now you need to tell R to load the e1071 package.
+```{r}
+library(e1071) # Note that we don't put the package name in quotes!
+```
+
+Finally, we can ask for skewness.
+```{r}
+skewness(hrd$mean.mass.g)
+```
+
+What does positive skewness mean? 
+
+>Answer:  TYPE YOUR ANSWER HERE
+
+### Kurtosis
+
+Kurtosis also uses the e1071 package. Because we loaded it previously, we do not need to call it again. But, remember that you must load a package before using any functions in it.
+
+```{r}
+kurtosis(hrd$mean.mass.g)
+```
+
+Is animal body weight leptokurtic, mesokurtic, or platykurtic?
+
+>Answer:  TYPE YOUR ANSWER HERE
+
+## Variation
+
+### Range
+
+Range is the difference of the largest to smallest values. 
+
+Option 1. calculate it
+```{r}
+max(hrd$mean.mass.g, na.rm = TRUE) - min(hrd$mean.mass.g, na.rm = TRUE)
+```
+
+Option 2. use range()
+```{r}
+diff(range(hrd$mean.mass.g, na.rm = TRUE))
+```
+
+### Percentile
+
+The *n^th* percentile is the value that cuts off the first *n* percent of the data values when they are all sorted in ascending order
+```{r}
+quantile(hrd$mean.mass.g, 0.25) # the first argument is the data you want to examine, the second is the percentile you want to obtain
+```
+Check that this matches the first quartile from the summary() that you made at the very beginning.  
+
+### Variance
+
+```{r}
+var(hrd$mean.mass.g, na.rm = TRUE)
+```
+
+### Standard deviation
+
+```{r}
+sd(hrd$mean.mass.g, na.rm = TRUE)
+```
+
+### Coefficient of variation
+
+Coefficient is the standard deviation divided by the mean x 100.
+
+Option 1:
+```{r}
+stdev <- sd(hrd$mean.mass.g, na.rm = TRUE) # standard deviation
+xbar <- mean(hrd$mean.mass.g, na.rm = TRUE) # mean
+
+(stdev/xbar)*100
+```
+
+Option 2 (requires installation of the raster package:
+```{r}
+install.packages("raster") #remember to turn this off by putting a # at the beginning of the line before rendering to HTML or DOCX
+```
+
+```{r warning=FALSE}
+library(raster)
+cv(hrd$mean.mass.g)
+```
+
+## Construct a histogram
+
+As we learned about in class, a histogram is a useful way to visualize the distribution of data. From now onwards, we will be using graphing functions from the *ggplot2* package, which is loaded when we called the *tidyverse* package library at the beginning of this Rmd file.
+
+```{r}
+ggplot(hrd) + # initiates the plot, calling the hrd dataframe; note the + sign
+  geom_histogram(aes(mean.mass.g)) # specifies the type of plot we want and what we want to visualize (aes = aesthetic)
+```
+
+To translate in plain language, we are asking R to create a graph from the *hrd* dataframe AND (+ symbol) make a histogram from mean.mass.g.
+
+Note a few things about this graph and the code that created it.
+
+1. The default x-axis label is identical to the variable name. This default x-axis should probably never be seen by anyone other than yourself, because it looks like some kind of mystery language.
+2. We probably want a title.
+3. There are less than 10 bars made by R's default algorithm for making break points. 550 animals get piled into the first interval, and two species of elephants are all by themselves way off to the right. Notice how badly chosen break points can misrepresent the character of the data. 
+
+Examine the following code that starts to fix some of the problems with the graph above.
+```{r}
+ggplot(hrd) + 
+  geom_histogram(aes(x=mean.mass.g),
+                 bins = 150) + 
+  labs(title = "Histogram of Animal Body Mass",
+       x = "Body mass (g)",
+       y = "Count")
+```
+
+In your own words, explain what the **labs()** function and **title, x, and y** arguments inside of the labs() function do.
+
+>Answer:  TYPE YOUR ANSWER HERE
+
+In your own words, explain what the bins = 150 argument does for the way our histogram looks. Try some other numbers of bins (e.g., 10, 100, 1000). Which one(s) do a good job of showing the shape of the data distribution?
+
+>Answer:  TYPE YOUR ANSWER HERE
+
+## Upload your rendered Word document and completed RMD file
+
+Remember to check that you have revised the author name, and have retained all the > so that your grader can easily find your answers to the questions. Make a Word document, and upload both the Word document and RMD file to Brightspace.
+

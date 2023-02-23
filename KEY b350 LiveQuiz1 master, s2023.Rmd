@@ -1,0 +1,189 @@
+---
+title: "Live Coding Quiz 1 Master"
+author: "SY"
+date: '2/15/2023 '
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+# Overview of Quiz 1
+
+Three categories of coding tasks:  
+
+1. information about data frame/objects
+2. extract a specific element/subset (including logical operators)
+3. calculation/mathematical operator
+
+Three versions:
+
+  + A. 11:00 and 11:13 time slots
+  + B. 11:26 and 11:39 time slots
+  + C. 11:52 and 12:05 time slots
+
+# Import data set and load packages
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+
+dw <- read.csv("dogORwolf.csv", header = T, stringsAsFactors = TRUE, fileEncoding = "UTF-8-BOM")
+head(dw)
+```
+
+## A
+
+```{r}
+dim(dw)
+oe2 <- dw$olfactory_exploration[dw$age_yrs > 2]
+mean(oe2, na.rm = T) #na.rm is optional
+
+```
+
+## B 
+
+```{r}
+CWD <- subset(dw, breed == "CWD") 
+# OR
+CWD <- dw %>% 
+  filter(breed == "CWD")
+
+dim(CWD)
+
+dw$total_exploration <- dw$visual_exploration + dw$olfactory_exploration
+# OR
+dw <- dw %>% 
+  mutate(total_exploration = visual_exploration + olfactory_exploration)
+
+```
+
+## C
+
+```{r}
+is.numeric(dw$manipulation)
+is.factor(dw$manipulation)
+
+fdogs <- subset(dw, sex == "f")
+# OR
+fdogs <- dw %>% 
+  filter(sex == "f")
+
+
+max(dw$look_elsewhere)
+# OR
+summary(dw$look_elsewhere)
+```
+
+***
+
+# Version A
+
+## A Task 1:  How many rows and columns are in the dataframe?
+
+(1 point)
+
+```{r}
+dim(dw)
+```
+
+## A Task 2:  Use square brackets to make a vector (array) called oe2 and put into it all of the values for olfactory_exploration for dogs older than 2 years (age_yrs)
+
+(1 point)
+
+```{r}
+oe2 <- dw$olfactory_exploration[dw$age_yrs > 2]
+```
+
+## A Task 3: Obtain the mean of oe2
+
+(1 point)
+
+```{r}
+mean(oe2, na.rm = T) #na.rm is optional
+```
+
+***
+
+# Version B
+
+## B Task 1: Make a subset (all columns) of the *dw* data frame called CWD, containing the breed CWD
+
+(1 point)
+
+```{r}
+CWD <- subset(dw, breed == "CWD") 
+# OR
+CWD <- dw %>% 
+  filter(breed == "CWD")
+```
+
+## B Task 2: How many rows and columns are in the *CWD* dataframe that you just made?
+
+(1 point)
+
+```{r}
+dim(CWD)
+```
+
+## B Task 3: Make a new column in the *dw* dataframe called total_exploration and put the sum of visual_exploration and olfactory_exploration in it
+
+(1 point)
+
+```{r}
+dw$total_exploration <- dw$visual_exploration + dw$olfactory_exploration
+# OR if they are comfortable with Getting to Know the Data
+dw <- dw %>% 
+  mutate(total_exploration = visual_exploration + olfactory_exploration)
+```
+
+***
+
+# Version C
+
+## C Task 1: What kind of data is in the manipulation variable?
+
+(1 point)
+
+```{r}
+is.numeric(dw$manipulation)
+is.factor(dw$manipulation)
+```
+
+## C Task 2:  Make a subset (all columns) of the *dw* data frame called fdogs, containing only female dogs (sex is f)
+
+(1 point)
+
+```{r}
+fdogs <- subset(dw, sex == "f")
+# OR
+fdogs <- dw %>% 
+  filter(sex == "f")
+```
+
+## C Task 3:  What is the largest value of look_elsewhere for the *dw* data frame?
+
+(1 point)
+
+```{r}
+max(dw$look_elsewhere)
+# OR
+summary(dw$look_elsewhere)
+```
+
+***
+
+# Task 4
+
+(1 point)
+
+How do you feel about this quiz? On the line below, type your response using the comment formatting so it doesn't show up on the rendered Word document.
+
+
+# Task 5
+
+(1 point)
+
+Knit this RMD to DOCX, and upload (1) Revised RMD and (2) DOCX to Canvas in the Quiz 1 assignment in the next five minutes.
+
+If you are unable to render your Rmd file into a DOCX because of a problem in a particular code chunk, you may use {r eval = FALSE} instead of {r} for that code chunk. This should skip the chunks with the errors.

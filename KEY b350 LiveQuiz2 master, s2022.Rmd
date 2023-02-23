@@ -1,0 +1,190 @@
+---
+title: "Live Coding Quiz 2 Master"
+author: "SY"
+date: "10 March 2022"
+output:
+  word_document: default
+  html_document:
+    theme: readable
+---
+
+# Overview
+
+Question 1: Import data and show first six lines. Code is already written. This tests a student's data management practices/understanding of troubleshooting.
+
+Question 2: Summary statistics for central tendency and variation
+
+Question 3: Troubleshoot an error for a data summary table
+
+Question 4: Complete the steps for a graph
+
+Question 5: Render to word doc (DOCX)
+
+Three versions (A, B, C):
+
+  + A. 11:35 and 11:50 time slots
+  + B. 12:05 and 12:20 time slots
+  + C. 12:35 time slot
+  
+Some options for alternatives that are correct are marked as comments; not exhaustive.
+
+***
+
+# Task 1:  Import data set and show first 6 lines of data frame
+
+(1 point)
+
+```{r echo = FALSE, results = 'hide'}
+cheetah <- read.csv("Cub_probability_of_independence.csv", stringsAsFactors = TRUE, fileEncoding = "UTF-8-BOM")
+head(cheetah)
+```
+
+# A Task 2:  What is the mode of Litter_fate?
+
+(1 point)
+
+```{r}
+# option 1
+tab <- table(cheetah$Litter_fate) 
+tab # not required
+names(tab)[which(tab==max(tab))]
+
+# option 2
+mode = function(x){ 
+    ta = table(x)
+    tam = max(ta)
+    if (all(ta == tam))
+         mod = NA
+    else
+         if(is.numeric(x))
+    mod = as.numeric(names(ta)[ta == tam])
+    else
+         mod = names(ta)[ta == tam]
+    return(mod)
+}
+
+mode(cheetah$Litter_fate)
+```
+
+# A Task 3:  Troubleshoot this error. 
+
+(1 point)
+
+The goal is to get the prey density median values of the different Litter_fate possibilities
+
+```{r}
+#preytable <- tapply(cheetah$Litter_fate, cheetah$Prey, median)
+preytable <- tapply(cheetah$Prey, cheetah$Litter_fate, median)
+preytable
+```
+
+# A Task 4: Complete the graph
+
+(1 point)
+
+The goal is to have a barplot of the median prey density (Prey, individuals/km2) on the y-axis and Litter_fate on the x-axis. Make sure the graph has all of the proper elements of a scientific graph.
+
+```{r}
+bar <- barplot(preytable, ylab = "Median Prey Density", xlab = "Litter Fate", main = "How Prey Denisty affects Litter Fate", ylim = c(0, 50), col = c("pink","yellow", "orange")) # needs labels, title; optional:  adjusting ylim and colors
+```
+***
+
+# B Task 2: What is the range of Lion?
+
+(1 point)
+
+```{r}
+# option 1
+max(cheetah$Lion) - min(cheetah$Lion)
+
+# option 2
+diff(range(cheetah$Lion))
+```
+
+# B Task 3: Troubleshoot this error. 
+
+(1 point)
+
+The goal is to find out the total number of cheetah cubs that survived in each litter (40 litters)
+
+```{r}
+# Ltable <- table(cheetah$Survive[cheetah$Litter_ID])
+Ltable <- tapply(cheetah$Survive, cheetah$Litter_ID, sum) 
+
+Ltable
+```
+
+# B Task 4: Complete the graph
+
+(1 point)
+
+The goal is to have an XY scatterplot of the prey densities (individuals per km2) on the y-axis and density of lions (individuals per km2) on the x-axis, with the those that survived in transparent blue and those who did not survive in transparent black. Make sure the graph has all of the proper elements of a scientific graph.
+
+```{r}
+plot(cheetah$Lion[cheetah$Survive==1],
+     cheetah$Prey[cheetah$Survive==1],
+     pch = 19,
+     col = adjustcolor("blue", alpha = 0.5),
+     xlab= "Lion Density",
+     ylab= "Prey Density",
+     main= ""
+     ) # needs labels, title
+points(cheetah$Lion[cheetah$Survive==0],cheetah$Prey[cheetah$Survive==0], pch = 19, col = adjustcolor("black", alpha = 0.5))
+legend("bottomleft", c("survived", "did not survive"), 
+       pch = 19, 
+       col = c("blue", "black"), 
+       bty = "n")
+```
+***
+
+# C Task 2: What is the skewness of Cheetah (individuals per km2)? Interpret.
+
+(1 point)
+
+```{r}
+#install.packages("e1071")
+library(e1071)
+skewness(cheetah$Cheetah)
+```
+
+> Positive value, right skew
+
+# C Task 3: Troubleshoot this error. 
+
+(1 point)
+
+The goal is to make a summary table of the mean Cheetah (individuals per km2) for each Litter_fate
+
+```{r}
+#CHtable <- aggregate(cheetah$Litter_fate, cheetah$Cheetah, mean)
+CHtable <- aggregate(cheetah$Cheetah, list(cheetah$Litter_fate), mean)
+names(CHtable) <- c("Litter_fate", "Cheetah_density")
+CHtable
+```
+
+# C Task 4: Complete the graph
+
+(1 point)
+
+The goal is to have an XY scatterplot of Cheetah (cheetah density; individuals per km2) on the y-axis and Lion (lion density; individuals per km2) on the x-axis. Make sure the graph has all of the proper elements of a scientific graph.
+
+```{r}
+plot(cheetah$Lion, cheetah$Cheetah, 
+     pch = 19,
+     xlab= "Lion Density (individuals/km2)",
+     ylab= "Cheetah Density (individuals/km2",
+     main= "Effect of Predator Density on Prey Density"
+     ) # needs labels, title
+
+```
+
+
+***
+
+# Task 5
+
+(1 point)
+
+Knit this RMD to DOCX, and upload (1) Revised RMD and (2) DOCX to Canvas in the Quiz 2 assignment in the next five minutes.
+
+If you are unable to render your Rmd file into a DOCX because of a problem in a particular code chunk, you may use {r eval = FALSE} instead of {r} for that code chunk. This should skip the chunks with the errors.

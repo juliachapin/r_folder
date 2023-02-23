@@ -1,0 +1,660 @@
+---
+title: "More methods for data exploration"
+author: "KEY"
+date: "SPRING 2023"
+output: word_document
+---
+
+# Introduction
+
+This activity is designed to help you with these **Getting to Know the Data** objectives:
+
+8. Use R to calculate and graphically display measures of central tendency and variation.
+12. Use R to generate data visualizations, including scatterplots, barplots, and boxplots. 
+
+And to help you learn some typical tasks you might encounter in getting our project data ready for exploratory analysis such as:
+
+* Changing a variable's data type (integer, factor, date, etc.)
+* Recoding a variable by changing or creating new variable levels or values
+* Rearranging the data within a dataframe
+* Making different types of summary tables
+* Combine data sets together into new dataframes
+* Taking random samples from within a data set
+
+Why do all this stuff in R, when it might seem easier to do in a spreadsheet program like Excel? Well, once you make the edit in Excel, there is no record of what you did unless you take the time to make one. But, even then it is not straightforward to use a record of what you did to try to get your raw data back. On the other hand, you'll find reproducibility much easier to maintain if you complete the tasks in R. 
+
+***
+## Set up workspace with special function libraries
+
+For this assignment, you will see the usefulness of the tidyverse function libraries!
+
+```{r warning=FALSE, message=FALSE, load_pkgs}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+## Data sets:  Livingston County Stream Monitoring Sites
+
+New York State's Department of Environmental Conservation (DEC) monitors the water quality of the state's bodies of water and groundwater for the purpose of discerning trends in water quality and identifying problems with water quality. For streams, the Rotating Integrated Basin Studies (RIBS) Program monitors 3 or 4 of the state's major watersheds each year, and each watershed is monitored on a schedule of once every five years. Data from the RIBS Program and other monitoring programs is freely available on the [Division of Water (DOW) Monitoring Data Portal](https://on.ny.gov/dowportal).
+
+For this assignment, we'll be working with two Livingston County datasets from the DOW Monitoring Data Portal. Data from the portal were first filtered to select only data from Livingston County, then exported as CSV files. In this assignment, we'll explore the relationship between macroinvertebrate biodiversity and pollution, specifically trash. One of the initiatives of SUNY Geneseo's Office of Sustainability is to make our campus plastic-free. Our investigation of Livingston County's stream conditions could be informative for this initiative.
+
+Although we're focused on Livingston County, the dataframe processing and data visualization tasks that we accomplish here may be applicable to your project questions for Wyoming County.
+
+### Import the data sets
+
+Import the data set "LivCo_Streams_User perception.csv" by running the code chunk below. There shouldn't be anything to reformat before importing into R (famous last words...). 
+
+```{r import_up}
+up <- read.csv("LivCo_Streams_User perception.csv", header=T) %>% 
+  select(site_id, sample_date, past_weather, trash_rank)
+head(up)
+```
+
+Take a look at the first few rows of data that were just generated. There are many variables, and we selected only a few to focus on for now. You may want to look up the other variables later for your project.
+
+Our focal variables are
+
+*site_id* - A code that represents a stream sampling site. For example, 04-BADN-8.7 is Bradner Creek in West Sparta, NY
+
+*sample_date* - Date that the data were collected
+
+*past_weather* - The weather during the past 24 hours (sub, rain, clouds)
+
+*trash_rank* - The trash ranking (0:best - 10:worst).
+
+Next, import the data set "LivCo_Streams_Macroinvertebrate sample info and metrics" by running the code chunk below. There shouldn't be anything to reformat before importing into R (famous last words...). 
+
+```{r import_msi}
+msi <- read.csv("LivCo_Streams_Macroinvertebrate sample info and metrics.csv", header=T) %>% 
+  select(site_id, sample_date, replicate, metric_richness, metric_hbi_index)
+
+head(msi)
+```
+
+Take a look at the first few rows of the *msi* dataframe. As for the *up* dataframe, we selected only a few to focus on for now. You may want to look up the other variables later for your project.
+
+Our focal variables are
+
+*site_id* - A code that represents a stream sampling site
+
+*sample_date* - Date that the data were collected
+
+*replicate* - Some sites were sampled at multiple locations within the site. The replicate number identifies the subsample.
+
+*metric_richness* - The number of macroinvertebrate species in the sample.
+
+*metric_hbi_index* - Click the black triangle on the right to skip over to this one if you don't see it in your view. The Hilsenhoff Biotic Index (HBI) is a metric to measure the overall tolerance of the macroinvertebrates in a sampled area, weighted by relative abundance. Values closer to 0 are found in communities that are highly sensitive to chemical pollution. Values closer to 10 are found in communities that are most tolerant to pollution. 
+
+## Changing between integer and factor
+
+The *up* dataframe contains data that are ranks from 0 to 10. There are no decimal values possible. However, when you examine the header row of *up*, you will notice that the trash_rank is an integer <int>. We can change it from an integer to a categorical data type. In R, we change it into a factor <fctr>.
+
+```{r integer_to_factor}
+up$trash_rank <- as.factor(up$trash_rank)
+
+head(up)
+```
+
+
+
+## Formatting a variable as date
+
+It would be a real programming challenge to have R automatically recognize the date in a CSV file based on the series of numbers and punctuation in a variable. This is because how dates are recorded differs across the world. In the US, for example, we typically use the order of month-day-year. Many European countries use the order of day-month-year. International date format is year-month-day, an order that is used in several countries of East Asia. Some date formats use punctuation, others do not. 
+
+For both the *up* and *msi* dataframes, sample_date is character <chr>. 
+
+```{r format_date_up}
+up$sample_dateformat = as.Date(up$sample_date, "%m/%d/%Y") # create date variable with Date Formatting
+
+head(up)
+```
+A new variable is added all the way to the right side of the dataframe, and its format is <date> in international date format.
+
+Why is it important to convert <chr> dates into proper date format? We'll illustrate some of the problems that result when dates are in <chr> and not <date> format in a graph.
+
+```{r trashtime_graph}
+ggplot(up) +
+  geom_point(aes(x=sample_date, y=trash_rank)) +
+   labs(title = "Timing of when trash is found in \n streams, plotted incorrectly",
+       x = "Date",
+       y = "Trash rank") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) # rotated the x axis labels!
+```
+In the graph you just created, the dates are plotted from left to right in alphanumeric order, starting with the months. This makes the dates all out of order, because we have many years of data. Also, each date is equally spaced from the next. This spacing is incorrect, because some dates should be farther apart from other dates. So, formatting dates correctly is important.
+
+### YOUR TURN: format a variable as date
+
+Use the code chunk below to create a new sample_dateformat variable in the *msi* dataframe that contains properly formatted dates.
+
+```{r format_date_msi}
+# clear code chunk in assignment
+msi$sample_dateformat = as.Date(msi$sample_date, "%m/%d/%Y") # create date variable with Date Formatting
+
+head(msi)
+```
+
+## Creating a new variable from information in another variable
+
+We might be interested in the presence or absence of trash, rather than the amount of trash. To separate on the basis of presence or absence, we can create a new variable whose values are dependent (conditional) on the values of the trash_rank variable.
+
+```{r new_trash_variable}
+up <- up %>% 
+  mutate(trash_present = case_when( # make a new variable called trash_present
+    trash_rank == 0 ~ "No", # cases where trash_rank is 0
+    trash_rank != 0 ~ "Yes" # cases where trash_rank isn't 0
+  ))
+
+head(up)
+```
+
+A new variable is added all the way to the right side of the dataframe.
+
+In plain language, we asked R to create a *up* dataframe that will write over the original *up* dataframe by:
+
+1. Calling the original *up* dataframe then
+2. Creating a new variable called trash_present, which has "No" if trash_rank is 0 and "Yes" if trash_rank is not 0 
+
+### YOUR TURN: create a new variable
+
+More trash could end up entering streams after rain compared to if there were no rain. Use the code chunk below to create a new variable that identifies if it has rained or not in the last 24 hours (past_weather). Because past_weather contains words (chr), you will need to enclose the case condition in quotes (e.g., "Sun").
+
+```{r new_rain_variable}
+# clear code chunk in assignment
+up <- up %>% 
+  mutate(past_rain = case_when( 
+    past_weather == "Rain" ~ "Yes", 
+    past_weather != "Rain" ~ "No" 
+  ))
+
+head(up)
+```
+
+The process we just used to make a new column can also be used to create other kinds of categories. Another similar function (also requires *tidyverse*) that could prove useful to us is if_else(). Its syntax takes this form:
+
+dataframe %>% 
+  mutate(
+    NEW_VARIABLE = if_else(
+      condition = REFERENCE_VARIABLE == "VALUE_TO_MATCH", 
+      true      = "VALUE_IF_MATCHED", 
+      false     = "VALUE_IF_UNMATCHED"
+    )
+  )
+
+## Making summary tables 
+
+As promised in an earlier tutorial, we're going to learn to produce complex summary tables. Now we're going to work with the *msi* dataframe. In contrast to the *up* dataframe, which has one row per site per date, the *msi* data frame has multiple rows per site per date, because each site was subsampled in replicates (see metadata above). If we eventually want to look at the relationship between trash and biodiversity, we need to have a matching experimental unit size across the two variables - one observation per site per date.
+
+### The summarise() function
+
+We'll use the summarise() function (part of *tidyverse*) to obtain median values of metric_richness for each site and date.
+
+```{r warning=FALSE, message=FALSE, median_richness}
+msi_medrichness <- msi %>% 
+ group_by(site_id, sample_dateformat) %>%
+  summarise(med_richness = median(metric_richness)) 
+
+head(msi_medrichness)
+```
+
+#### YOUR TURN: create a summary table
+
+In the code chunk below, use summarise() to create a summary table of median values of metric_hbi_index for each site and date.
+
+```{r warning=FALSE, message=FALSE, median_hbi_index}
+# clear code chunk in assignment
+msi_medhbi <- msi %>% 
+ group_by(site_id, sample_dateformat) %>%
+  summarise(med_hbi = median(metric_hbi_index)) 
+
+head(msi_medhbi)
+```
+
+### The summarise_all() function
+
+We could obtain each metric's summary table of median values separately and use them one at a time. Or, using the power of the summarise_all() function, calculate median values of all variables that are not the grouping variables.
+
+```{r median_msi}
+msi_med <- msi %>% 
+ group_by(site_id, sample_dateformat, sample_date) %>%
+  summarise_all(median) 
+
+head(msi_med)
+```
+
+### The summarise_at() function
+
+One problem with summarise_all() in the way we just used it is that median values for replicate were also calculated, and we had to retain sample_date as a grouping variable, both of which are silly. You can specify which variables to include/exclude with summarise_at().
+
+```{r median_msi2}
+msi_med <- msi %>% 
+ group_by(site_id, sample_dateformat) %>%
+  summarise_at(vars(-sample_date, -replicate), median) # minus sign means what it look like, i.e., variables to exclude from the summary
+
+head(msi_med)
+```
+
+So, what can we do with this table of medians? We just derived a dataframe from the raw data. We can treat msk_med the same as any other dataframe - make graphs, summarize it further, calculate measures of variability, etc. 
+
+## Combining data sets together into new dataframes
+
+### Merging horizontally (join)
+
+Recall that our goal is to look at the relationship between trash and biodiversity (we're almost there!). Currently, we can't make a graph with trash rank on the x-axis and a biodiversity metric on the y-axis, because trash_rank and the median biodiversity metrics are in two different dataframes. We can merge two dataframes together if there are matching variables in each. In our case, site_id and sample_dateformat are the connection between the dataframes *up* and *msi_med*.
+
+inner_join() from *tidyverse* allows us to do a horizontal merge, retaining only the rows of data with shared IDs. Imagine we are adding the columns of *msi_med* to the *up* dataframe, using the common variables of site_id and sample_dateformat to match up values. Note that unambiguous matching between the two dataframes is a key prerequisite for this function to produce the desired outcome - this is why we use both variables for matching.
+
+```{r join_msimed_up}
+up_msi_med <- up %>% # first call up the up dataframe
+  select(-sample_date) %>% # then eliminate the sample_date <chr> variable from up
+  inner_join(msi_med, by = c("site_id", "sample_dateformat")) # then join the msi_med dataframe to up by site_id and sample_dateformat
+
+head(up_msi_med)
+```
+
+Data from sites and dates sampled in *up* that do not appear in *msi_med* and vice-versa are dropped with inner_join(). If you look in your environment, you should see that only 46 observations are in common between *msi_med* (98 observatiosn) and *up* (65 observations).
+
+### Add rows from another dataframe
+
+Let's say you wanted to add another county's data to the up_msi_med dataframe we've made for Livingston County. Adding rows only works if all of the columns are present (but not necessarily in the same order) in both dataframes. Here are two options:
+
+#### rbind()
+
+This base R function looks like this
+
+dataAB <- rbind(dataA, dataB)
+
+#### bind_rows()
+
+This *tidyverse* function looks like this
+
+dataAB <- bind_rows(asia_life_exp, life_df) 
+
+OR
+
+dataAB <- dataA %>%
+  bind_rows(dataB)
+
+## Take random samples from within a data set
+
+Sometimes we need to grab out a small subset, randomly sampled from a dataframe. 
+
+```{r random_sampling}
+samp <- msi[sample(1:nrow(msi), 20 ,replace=FALSE),] #from the first to the last row of the msi dataframe, select 20 rows at random without replacement.
+
+head(samp)
+```
+
+## More options for data visualization
+
+In this section, we'll add barplots to your data visualization toolkit, along with some more complex graphs and layouts.
+
+### Bar plots
+
+You've used geom_histogram(), geom_boxplot(), and geom_point(). Now for geom_bar(). Let's see if there is a relationship between presence of trash and species richness. Revise the code chunk below to customize the axis labels and add a title.
+
+```{r geom_bar}
+# first make a summary table
+trash_richness <- up_msi_med %>% 
+  group_by(trash_present) %>% 
+  summarise(med_metric_richness = median(metric_richness))
+
+# barplot (Remember to revise labels and add a title)
+ggplot(trash_richness) +
+  geom_bar(aes(x=trash_present, y=med_metric_richness), # should look familiar up until here
+           stat = "identity") # this bit is different from what we saw before
+```
+
+Write a figure caption below for this graph. In your caption, orient the viewer to the elements of the graph (what is being plotted), and interpret the relationship between the presence of trash and median species richness.
+
+> Answer: REPLACE THIS TEXT WITH YOUR FIGURE CAPTION
+
+### Distinguishing data points by additional variables
+
+Is there a relationship between the trash rank, whether it has rained recently, and how much of the macroinvertebrate community is made up of pollution-sensitive species?
+
+```{r plot_addl_var}
+ggplot(up_msi_med) +
+  geom_point(aes(x=trash_rank, y=metric_hbi_index,
+                 color = past_rain)
+  ) +
+  labs(title = "What affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index")
+```
+
+How did we get the points to be color-coded by past_rain? Which function is it an argument of ggplot(), geom_point(), or aes()?
+
+>Answer: REPLACE THIS TEXT WITH YOUR ANSWER.
+
+### Customize the legend
+
+We can also revise the default legend. 
+
+```{r legend}
+ggplot(up_msi_med) +
+  geom_point(aes(x=trash_rank, y=metric_hbi_index,
+                 color = past_rain)
+  ) +
+  labs(title = "What affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index") +
+  scale_color_discrete(name = "Rain in past 24 hours")
+```
+
+How did we change the title for our legend?
+
+>Answer:  REPLACE THIS TEXT WITH YOUR ANSWER.
+
+#### YOUR TURN: Customize the legend further
+
+Use the section on legends in the [Cookbook for R](http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/) to alter any other formatting aspect of the legend in the code chunk below. Select something that improves the readability of the graph.
+
+```{r more_legend}
+
+```
+
+### Jitter the points
+
+```{r jitter}
+ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index,
+                 color = past_rain),
+              width = 0.05, height = 0.05
+  ) +
+  labs(title = "What affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index") +
+  scale_color_discrete(name = "Rain in past 24 hours")
+```
+
+What does the geom_jitter() function do? When would you want to use this function? How would you adjust the amount of "jittering" in the graph above?
+
+>Answer:  REPLACE THIS TEXT WITH YOUR ANSWER.
+
+### Adjusting appearance of point symbols
+
+```{r symbols}
+ggplot(up_msi_med) +
+  geom_point(aes(x=trash_rank, y=metric_hbi_index,
+                 color = past_rain),
+              size = 3, # change the size of the points; default size is 1.5
+              shape = 17 # change the shape of the symbol
+  ) +
+  labs(title = "What affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index") +
+  scale_color_discrete(name = "Rain in past 24 hours")
+```
+
+Using either the help file (?shape) or Google for assistance, change the shape in the code chunk above to open triangles.
+
+#### Choosing different colors from the default
+
+Color choice is a critical part of communicating about data. Selecting color can also be fun. 
+
+Color choices should enhance understanding of the patterns in the data. You also want everybody to be able to see the colors you have chosen! Consider using a [contrast check tool](https://accessibleweb.com/color-contrast-checker/) and a [color visibility tool](https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40) before settling on colors to use in a graph. 
+
+```{r colors}
+# single color
+ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index),
+                 color = "navyblue",
+              width = 0.05, height = 0.05
+  ) +
+  labs(title = "Effect of trash on macroinvertebrate \n community composition",
+       x = "Trash rank",
+       y = "HBI index")
+
+# multiple colors
+
+ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index,
+                 color = past_rain)
+  ) +
+  scale_color_manual(values = c("No" = "coral", "Yes" = "slateblue", "NA" = "gray"),
+                     name = "Rain in past 24 hours") +
+  labs(title = "What affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index") 
+```
+
+Now change the color names to other colors that you like better!
+
+For the graph with multiple colors that we chose ourselves, we didn't use scale_color_discrete() to make a custom legend title. Where did our custom legend title move to?
+
+>Answer:  REPLACE THIS TEXT WITH YOUR ANSWER.
+
+#### Changing opacity of points
+
+```{r opacity}
+# single color
+ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index),
+                 color = "navyblue",
+              alpha = 0.5,
+              width = 0.05, height = 0.05
+  ) +
+  labs(title = "Effect of trash on macroinvertebrate \n community composition",
+       x = "Trash rank",
+       y = "HBI index")
+
+# multiple colors
+ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index,
+                 color = past_rain),
+              width = 0.05, height = 0.05
+  ) +
+  scale_color_manual(values = alpha(c("No" = "coral", "Yes" = "slateblue", "NA" = "gray"), 0.7),
+                     name = "Rain in past 24 hours") +
+  labs(title = "What affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index") 
+```
+Try changing the values of alpha (between 0 and 1). Why is manipulating alpha a useful option for visualizing data? What is the difference in the code for changing alpha with a single color vs. multiple colors? 
+
+>Answer:  REPLACE THIS TEXT WITH YOUR ANSWER.
+
+Let's take a break here from coding and interpret the latest graph. Is there a relationship between the amount of trash found and the composition of the invertebrate community? Write a figure caption that orients us to what is plotted on the graph and the take home messsage of the graph.
+
+>Answer:  REPLACE THIS TEXT WITH YOUR FIGURE CAPTION
+
+### Adjust axes
+
+Sometimes we want to use a semilog or log-log scaling - just add y= "log10" and/or x = "log10) as shown below. Note that you will sometimes get a warning, because we can't take logs of zero.
+
+To make things a bit clearer, now that we are adding so many graph options, we'll organize our graph code chunks a little differently. See if you can translate into plain language, and ask for confirmation that you are translating correctly.
+
+```{r log}
+p <- ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_richness),
+                 color = "navyblue",
+              alpha = 0.5,
+              width = 0.05, height = 0.05
+  )
+
+p + labs(title = "Effect of trash on macroinvertebrate \n community composition",
+       x = "Trash rank",
+       y = "Species richness") +
+  coord_trans(y = "log10") 
+```
+
+Try plotting the data with and without coord_trans(). Why is plotting on log scale axes sometimes a useful option for visualizing data?
+
+>Answer:  REPLACE THIS TEXT WITH YOUR ANSWER.
+
+### Drawing a reference line
+
+It's sometimes useful to have a reference line drawn on graphs. Check out the function geom_abline() in the help file for one simple way to add lines to plots. In the code chunk below, calculate the median species richness for the entire *msi* data set. Use that to make a black, dotted horizontal reference line at the height of the median that you calculated. You may want to ask the help file for how to use lty to get a dotted rather than a solid line.
+
+```{r geom_abline}
+# calculate median first below
+
+
+# next add geom_abline() to make the reference line
+p <- ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_richness),
+                 color = "navyblue",
+              alpha = 0.5,
+              width = 0.05, height = 0.05
+  )
+
+p + labs(title = "Effect of trash on macroinvertebrate \n community composition",
+       x = "Trash rank",
+       y = "Species richness") +
+  # YOUR CODE SHOULD GO BELOW HERE Delete all below for assignment
+  geom_abline(
+   slope = 0,
+   intercept = median(msi$metric_richness),
+   color = "black",
+   lty = 2)
+```
+### Graph themes and layout
+
+In the code chunk below, make a scatterplot that shows the change in metric_richness over time from the *msi* dataframe. Make plotting choices that reflect best practices in visualizing the data - symbol type and size, jittering, point color/opacity, etc. We'll play around with this graph in the next few sections.
+
+```{r richness_plot}
+# clear this code chunk for assignment
+p <- ggplot(msi) +
+  geom_point(aes(x=sample_dateformat, y=metric_richness),
+                 color = "maroon",
+              alpha = 0.5,
+             size = 3
+  )
+
+p + labs(title = "Species richness trends in Livingston County",
+       x = "Date",
+       y = "Species richness") +
+  theme_light()
+```
+#### *ggplot* themes
+
+There are eight different built-in themes of *ggplot2*. They are theme_grey(), theme_bw(), theme_linedraw(), theme_light(), theme_dark(), theme_minimal(), theme_classic(), and theme_void(). Add to the end of your plot code like this:
+
+p <- ggplot(df) +
+geom_point(aes(x = X, y = Y) +
+theme_bw() # or whichever one you want to try
+
+The themes that produce the highest contrast betwen plot elements and the data are the best to use. For example, if your symbols are black, you want theme_classic() or another theme with a white plot area, and not theme_dark().
+
+In the code chunk below, change from the default theme_grey() to another theme that shows good contrast between your symbol colors and the plot area.
+
+```{r explore_themes}
+
+```
+
+#### Intro to multiple panels
+
+Sometimes we want to have plots laid out side-by-side or otherwise placed together to more effectively show their combined story. There are lots of ways to handle creating layouts of multiple plots. 
+
+##### Separating one plot into its facets
+
+We'll start with one of the simplest ones in this assignment, which works for situations where there is a common axis across one or more plots.
+
+```{r facet_grid}
+# We have plotted this many times already
+p <- ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index),
+              width = 0.05, height = 0.05
+  ) 
+
+# prepare custom labels for past_rain
+rain_labels <- c(No = "No recent rain", Yes = "Recent rain")
+
+# add title, axis labels, and specify layout in a horizontal grid (1 row x 3 columns)
+p + labs(title = "WWhat affects the composition of the \n macroinvertebrate community?",
+       x = "Trash rank",
+       y = "HBI index") +
+  facet_grid(. ~ past_rain,
+             labeller=labeller(past_rain = rain_labels)
+             )
+```
+Notice that the y-axis extent is automatically scaled to the same limits for ease of comparison (thanks *ggplot*!). 
+
+The first argument of the facet_grid() function is what specifies the 1 x 3 arrangement. To have the past_rain plots arranged vertically rather than horizontally (3 x 1), change the first argument of facet_grid like so:
+
+facet_grid(past_rain ~ .)
+
+To generalize, the argument is a formula of vertical ~ horizontal.
+
+##### Combining different plots
+
+If you want to display plots on different axes, you use the package *patchwork*. Install it first if you don't already have it.
+
+```{r load_patchwork}
+#install.packages("patchwork")
+library(patchwork)
+```
+
+When you make your graphs, you need to store them into separate objects.
+
+```{r}
+# first plot
+p1 <- ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_hbi_index),
+              width = 0.05, height = 0.05
+  ) 
+
+# second plot
+p2 <- ggplot(up_msi_med) +
+  geom_jitter(aes(x=trash_rank, y=metric_richness),
+              width = 0.05, height = 0.05
+  ) 
+
+# voila, put them next to each other!
+p1 + p2
+
+# or on top of each other
+p1 / p2
+```
+If you have more than two graphs, *patchwork* has you covered. Examine [this online book chapter](https://ggplot2-book.org/arranging-plots.html) to see how this is done.
+
+#### YOUR TURN: Apply what you've learned to the panel of plots
+
+1. Make boxplots instead of scatterplots 
+2. Add custom axis labels and title
+3. Apply color to the trash ranks appropriately
+4. Apply a theme that enhances readability of your graphs
+
+You haven't directly been shown all of these things, but we believe you can figure it out! Visit this [link](https://r-graph-gallery.com/264-control-ggplot2-boxplot-colors.html) to find out how to apply colors (hint:  fill = ) and remove that pesky unnecessary legend (hint:  theme).
+
+```{r boxplot_panel}
+#USE THIS CODE CHUNK TO MAKE YOUR BOXPLOTS
+
+# clear below this line for the assignment
+# first plot
+p1 <- ggplot(up_msi_med) +
+  geom_boxplot(aes(x=trash_rank, y=metric_hbi_index,
+                   fill = trash_rank) 
+  ) +
+  scale_fill_brewer(palette="BuPu") +
+  theme_classic() +
+  theme(legend.position="none") +
+  labs(title = "Sensitivity to pollution",
+       x = "Trash rank",
+       y = "HBI index")
+
+# second plot
+p2 <- ggplot(up_msi_med) +
+  geom_boxplot(aes(x=trash_rank, y=metric_richness,
+                   fill = trash_rank)
+  ) +
+  scale_fill_brewer(palette="BuPu") +
+  theme_classic() +
+  theme(legend.position="none") +
+  labs(title = "Species richness",
+       x = "Trash rank",
+       y = "Number of species")
+
+# voila, put them next to each other!
+p1 + p2
+
+
+```
+Now for the finishing touch:  a figure caption.
+
+>Answer: REPLACE THIS TEXT WITH YOUR FIGURE CAPTION
+
+## Upload your rendered Word document and completed RMD file
+
+Remember to check that you have revised the author name, and have retained all the > so that your grader can easily find your answers to the questions. Make a Word document, and upload both the Word document and RMD file to Brightspace.

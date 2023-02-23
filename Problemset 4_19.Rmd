@@ -1,0 +1,216 @@
+---
+title: "Final Problemset"
+author: "Juila Chapin"
+date: "4/17/2021"
+output:
+  word_document: default
+  html_document: default
+---
+# Butterflies Part 1
+
+```{r setup, include=FALSE}
+fly <- read.csv("Hesperia_forewing.csv")
+```
+
+### Statistical Hypotheses
+
+> H0: There is no correlation between year and max temperature in June (r=0). 
+
+> HA: There is a correlation between year and max temperature in June (r>0 or r<0).
+
+### Statistical Test
+
+> Spearman Rank Correlation Test 
+
+### Justification for Statistical Test
+
+> A correlation test is appropriate to determine if there is an association between max temperatre in June and year. Specifically, the Spearman Rank Correlation test was chosen because the data is nonparametric (W = 0.95751, p-value = 0.0407). 
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+shapiro.test(fly$Year)
+shapiro.test(fly$JUN_MAX)
+```
+```{r, echo=FALSE,  results = 'hide', message = FALSE, warning=FALSE}
+cor.test(fly$Year, fly$JUN_MAX, method = "spearman", alternative = "two.sided")
+```
+
+### Graph
+
+```{r, echo=FALSE}
+plot(fly$Year, fly$JUN_MAX, xlab = "Year", ylab = "Maximum Temp in June (Celcius)", main = "June Temp and Year Correlation", col = "orange", pch = 19)
+
+```
+*Figure 1.* The max temperature recorded in June for each year from 1880 to 1973. 
+
+### Results
+
+> I fail to reject the null hypothesis. There is no correlation between year and and maximum temperature in June (S = 28687, p-value = 0.3795). 
+
+### Interpretation
+
+> The data suggests no correlation between max temperature and year. We do know that climate change is real and the earth is getting warmer, so perhaps there was no correlation becasue we were testing the maximum temoerature and maybe we would see a correlation in we examined average temperature.
+
+
+# Butterflies Part 2
+
+### Statistical Hypotheses
+
+> H0: The slope of the regression for forewing length for males for mean June temperatures is zero. 
+
+> HA: The slope of the regression for forewing length for males for mean June temperatures is not zero. 
+
+### Statistical Test
+
+> Linear Regression Analysis 
+
+### Justification for Statistical Test
+
+> A linear regression analysis was done because the association between two variables is linear, at each value of x the distribution of possible y values is normal, and variance of y values is the same at all values of x. An outlier, 26, was removed becasue with it in the link function assumptions were not satisfied, but once 26 was removed all assumptions were satisfied and a regression was able to be done. 
+
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+male <- subset(fly, fly$sex == "Males")
+fl.lm <- lm(male$median_forewing_length ~ male$JUN_mean)
+summary(fl.lm)
+```
+```{r, echo=FALSE,  results = 'hide', message = FALSE, fig.show='hide'}
+par(mfrow = c(2,2))
+plot(fl.lm)
+library(gvlma)
+gv <- gvlma(fl.lm)
+summary(gv)
+```
+```{r, echo=FALSE,  results = 'hide', message = FALSE, fig.show='hide'}
+male2 <- male[-c(26),]
+fl.lm2 <- lm(male2$median_forewing_length ~ male2$JUN_mean)
+par(mfrow = c(2,2))
+plot(fl.lm2)
+summary(fl.lm2)
+library(gvlma)
+gv.f <- gvlma(fl.lm)
+gv.f2<- gvlma(fl.lm2)
+summary(gv.f)
+summary(gv.f2)
+```
+
+### Graph
+
+```{r, echo=FALSE}
+plot(male2$JUN_mean, male2$median_forewing_length, xlab = "Mean Temp in June (Celsisus)", ylab = "Median Forewing Length", main = "Male Forewing Length versus Temperature", col = "orchid", pch=19 )
+lines(male2$JUN_mean, fitted(lm(male2$median_forewing_length ~ male2$JUN_mean)), lwd = 2)
+```
+*Figure 2.* The median forewing length of males are plotted against the mean temperature in June. 
+
+### Results
+
+> The null hypothesis is rejected. For every increase in degree celcius of mean temperature in June, we can expect the male median forewing length to increase by 0.3677 (beta=0.3677, t=5.659,, df=24, p-value < 0.001, r squared=0.5441).
+
+### Interpretation
+
+> It is possible that a higher mean temperature leads to a higher median forewing length in males because they warmer temperatures may offer better growing conditions as opposed to cooler temperatures. Perhaps they do not need to exert as much energy on staying warm when the temperatures are higher.  
+
+# Butterflies Part 3
+
+### Statistical Hypotheses
+
+> H0: The median forewing length does not differ between males and females of the butterfly species H. comma. 
+
+> HA: The median forewing length does differ between males and females of the butterfly species H. comma. 
+
+### Statistical Test
+
+> Student's T-test
+
+### Justification for Statistical Test
+
+> A Students t-test is appropriate becasue I am doing a test of differenceand the data is normal and variances are similar. The t-test is unstacked because male and female were made into different subsets, if they were not it would be stacked. 
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+female <- subset(fly, fly$sex == "Females")
+shapiro.test(male$median_forewing_length)
+shapiro.test(female$median_forewing_length)
+var.test(male$median_forewing_length, female$median_forewing_length)
+````
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+t.test(male$median_forewing_length, female$median_forewing_length, alternative = "two.sided", var.equal = TRUE)
+
+```
+
+### Graph
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+boxplot(fly$median_forewing_length ~ fly$sex, xlab = "Sex", ylab = "Median Forewing Length", main= "Butterfly Sex versus Forewing Length", col = c("deeppink", "gold"))
+
+```
+*Figure 3.* The median forewing length plotted against the sex of the butterfly. 
+
+### Results
+
+> The null hypothesis is rejected. Female forewign length in significantly largrer than male forewing length (t = -10.303, df = 56, p-value = 1.532e-14).
+
+### Interpretation
+
+> The data suggests the male forewing length is bigger. Butterflies could exhibit sexual dimorphism. It is possible that butterflies need to be bigger for reproductive processes. 
+
+
+# Peanuts
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+p <-read.csv("peanut_allergy.csv")
+head(p)
+```
+
+### Statistical Hypotheses
+
+> H0: If a child showed peanut sensitivity, diet regimen does not affect if a child develops a peanut allergy or not.
+
+> HA: If a child showed peanut sensitivity, diet regimen does affect whether a child develops a peanut allergy or not. 
+
+> H0: If a child didn't show peanut sensitivity, diet regimen does not affect if a child develops a peanut allergy or not.
+
+> HA: If a child didn't show peanut sensitivity, diet regimen does affect if a child develops a peanut allergy or not.
+
+### Statistcal Test
+
+> G-test Contingency Test
+
+### Justification for Statistical Test
+
+> A G-test contingency test is appropriate becasue I am testing if there is an assoication between two variables, diet regimen and allergy developement. 
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+risk <- subset(p, p$had_early_risk == "yes") 
+contab <- table(risk$regimen, risk$allergic)
+contab
+```
+
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+library(RVAideMemoire)
+G.test(contab)
+```
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+no <- subset(p, p$had_early_risk == "no")
+contab2 <- table(no$regimen, no$allergic)
+contab2
+```
+```{r, echo=FALSE,  results = 'hide', message = FALSE}
+G.test(contab2)
+```
+
+### Graph
+```{r, echo=FALSE}
+par(mfrow = c(1,2))
+
+mosaicplot(contab, xlab = "Dietary Regimen", ylab = "Allergic", main = "Peanut Sensitivity", col= c("deepskyblue", "darkmagenta"))
+
+mosaicplot(contab2, xlab = "Dietary Regimen", ylab = "Allergic", main = "No Sensitivity", col= c("deepskyblue", "darkmagenta"))
+````
+*Figure 4.* The effect of either eating or avoiding peanuts has on developing an allergy for both infants with and without a peanut sensitivity. 
+
+### Results
+
+> I reject the both null hypotheses. Eating peanuts is associated with not developing an allergy for infants with peanut sensitivity (G = 8.7191, df = 1, p-value = 0.003149). Eating peanuts is also associated with not developing an allergy for infants without peanut sensitivity (G = 28.91, df = 1, p-value = 7.582e-08).
+
+### Interpretation
+
+> The data shows that we should not tell infants at risk to avoid eating peanuts. Allergies often develop when the body mistakes a non-harmful substance to be harmful and attacks it. It is possible that the increased exposure to peanuts when someone at risk eats them allows the body to recognize that peanuts are not harmful. 

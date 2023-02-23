@@ -1,0 +1,66 @@
+﻿site_id,sample_date,primary_contact_rank,secondary_contact_rank,current_weather,past_weather,water_clarity_rank,suspended_phytoplankton_rank,periphyton_rank,macrophyte_rank,odor_rank,trash_rank,discharge_pipe_rank,primary_affecting_variable,secondary_affecting_variable,user_comment
+04-BADN-8.7,7/24/2019,B,A,Sun,Rain,1,0,4,0,0,1,0,Periphyton,None,UPDATED river mile from 9.6 to 8.7. Samplers had to move site.
+04-BERD-5.6,7/2/2014,C,C,Sun,Rain,6,5,,2,0,0,0,None,None,Deep muddy wetland
+04-BERD_T1-1.6,7/2/2014,B,A,Sun,Rain,2,0,0,0,0,1,1,Water Clarity,Trash,
+04-BIDW-1.5,7/3/2014,C,B,Sun,Rain,1,0,7,0,0,0,0,None,None,Small low flow
+04-BIDW-1.5,7/29/2015,B,B,Sun,Sun,1,0,1,1,0,1,0,None,None,
+04-BIDW_T4-0.6,7/24/2019,D,D,Sun,Rain,6,5,5,0,0,3,0,Proximity_to_Development_Roads,Water Clarity,
+04-BRON-3.2,7/29/2009,C,C,Rain,NA,2,1,4,1,0,0,0,Periphyton,None,Fair amount of silt on rocks
+04-BRON-4.7,7/2/2014,B,B,Clouds,Rain,2,0,8,0,0,0,0,Periphyton,None,Leaches
+04-BSPR-0.6,7/1/2014,B,A,Sun,Clouds,1,0,6,3,1,1,0,Periphyton,Trash,
+04-BSPR-0.6,7/30/2015,A,A,Sun,Rain,0,0,1,4,0,0,1,None,None,
+04-BUCK-2.0,7/24/2019,C,A,Sun,Clouds,1,0,3,0,0,1,0,Periphyton,None,Low flow
+04-CONE-1.9,7/23/2019,B,A,Rain,Rain,1,0,2,0,0,1,0,Periphyton,None,
+04-CONE-1.9,7/1/2014,A,A,Sun,Rain,0,0,5,0,0,1,0,None,None,"Should not swim, there was leach"
+04-CONE-1.9,7/29/2009,D,D,Clouds,Sun,3,0,5,2,5,1,0,Odor,None,
+04-CONE-9.5,8/28/2013,E,E,Sun,Sun,5,0,4,3,7,1,5,Water Clarity,None,Treatment plant
+04-CONE-9.9,8/28/2013,D,C,Sun,Sun,0,1,4,5,7,1,0,Phytoplankton,Periphyton,
+04-CRIS-1.4,9/25/2014,D,D,Sun,Sun,2,0,4,2,0,0,2,None,None,Very ag heavy. Moss much silt on rocks . Tractor traffic through stream below our sampling point
+04-CRIS-2.6,9/24/2014,C,B,Sun,Sun,2,0,1,0,0,0,0,None,None,"Traffic, silt, huse and lawn"
+04-CRIS-3.7,9/24/2014,C,B,Sun,Sun,2,0,0,0,0,0,0,Periphyton,None,
+04-DUNN-0.1,7/24/2019,B,A,Sun,Clouds,2,1,0,0,0,0,0,Water Clarity,None,
+04-GENS-35.1,7/23/2019,F,C,Rain,Rain,7,0,1,0,0,2,0,Other,Water Clarity,Deep muddy Mud slide!
+04-GENS-35.1,7/29/2009,NA,NA,NA,NA,,,,,,,,None,None,
+04-GENS-44.1,7/24/2019,E,E,Sun,Rain,10,10,10,10,5,5,10,Water Clarity,Discharge/Pipes,Pipe creating strong current upstream
+04-GENS-50.4,7/29/2009,E,D,Rain,Sun,10,,,,0,0,0,Water Clarity,None,
+04-GENS_T38-0.4,7/1/2014,D,D,Sun,Rain,2,0,5,0,0,0,0,None,None,"Low flow, leaches"
+04-GENS_T43-3.0,7/29/2009,NA,NA,Rain,Sun,9,3,2,3,1,0,0,Water Clarity,"Phytoplankton, Periphyton",
+04-GENS_T44-1.0,7/29/2009,E,E,NA,NA,3,2,0,0,0,0,0,None,None,
+04-GENS_T45-1.3,7/29/2009,B,B,Rain,Sun,2,1,3,1,0,0,0,None,None,
+04-JCOX-2.2,7/2/2014,C,B,Clouds,Rain,5,3,8,1,0,0,0,Water Clarity,Periphyton,
+04-JCOX_S-3.7,7/23/2019,E,E,NA,NA,7,0,0,10,6,0,5,Macrophyte,Odor,
+04-KESH-13.6,7/29/2009,D,D,Clouds,Sun,2,0,5,0,5,4,0,Water Clarity,None,"large gravel piles, working in stream"
+04-KNNE-2.3,7/2/2014,C,B,Clouds,Clouds,2,0,0,0,1,2,0,Water Clarity,Trash,Surrounded by agriculture
+04-LBRD-1.5,7/24/2019,D,D,Sun,Rain,3,0,8,0,0,2,0,Proximity_to_Development_Roads,Macrophyte,
+04-LCON-0.6,7/23/2019,C,B,Sun,Rain,2,0,3,0,0,2,0,Periphyton,None,
+04-LIMK-1.3,7/2/2014,C,C,Clouds,Sun,1,0,1,0,0,2,0,Periphyton,None,Near ag and barns
+04-LIMK-1.3,7/29/2015,B,A,Sun,Sun,1,0,6,,1,3,0,None,None,
+04-LMIL-0.4,7/29/2009,A,A,Clouds,Sun/Clouds,2,0,4,1,0,2,1,Periphyton,Trash,
+04-MCMI_N-0.6,7/29/2009,D,C,Clouds,Sun,0,0,8,0,3,0,0,Periphyton,Odor,Small farm.
+04-MCMI_N-3.0,7/2/2014,B,B,Sun,Sun,0,0,1,0,0,2,0,None,None,Home farm and garbage
+04-MCMI_S-0.7,7/29/2009,B,B,Clouds,Sun,0,0,1,0,0,0,1,Discharge/Pipes,None,Small farm but  clean.
+04-MCMI_S-5.0,7/23/2019,E,D,Rain,Rain,5,7,7,5,3,0,0,Water Clarity,Odor,
+04-MILD-2.5,7/3/2014,B,A,Sun,Rain,6,0,1,0,0,0,0,Water Clarity,None,
+04-MUDW-1.0,7/29/2009,E,NA,Clouds,Sun,6,0,4,4,1,1,0,Water Clarity,Periphyton,
+04-PATG-0.3,7/24/2019,C,B,Sun,Rain,1,0,2,1,0,0,0,Other,Other,Stream is extremely small
+04-RAGA-1.4,7/29/2009,D,C,Rain/Clouds,Sun/Clouds,10,0,5,1,1,4,1,Water Clarity,None,
+04-RAGA-9.3,7/29/2009,E,D,Clouds,Sun/Clouds,9,0,,,7,3,0,Odor,Water Clarity,"Dead possum, mucky turbid water"
+04-RAGA-9.3,7/24/2019,D,B,Sun,Rain,8,0,2,0,0,2,0,Water Clarity,Other,Steep banks
+04-RAGA-9.3,7/2/2014,B,A,Sun,Rain,7,0,0,0,2,1,0,Water Clarity,Trash,
+04-RAGA-9.3,7/29/2015,C,A,Sun,Sun,4,0,6,0,0,0,0,None,None,
+04-RAGA-18.6,7/29/2009,D,D,Clouds,Sun/Clouds,3,0,8,1,1,2,1,Periphyton,Traffic/Location,
+04-RAGA_T16-1.8,7/2/2014,C,B,Sun,Rain,4,0,0,0,0,2,2,Water Clarity,"Trash, Discharge/Pipes",
+04-SALK-1.5,7/2/2014,C,B,Clouds,Rain,1,0,6,0,0,0,0,Periphyton,None,Giant hog weed
+04-SALK-1.5,7/29/2009,D,D,Rain,Rain,3,2,5,3,0,0,0,Periphyton,None,Rocks covered with algae and silt
+04-SPRG-3.7,7/1/2014,A,A,Sun,Clouds,0,0,8,0,0,0,0,None,None,
+04-SPRG-3.7,7/30/2015,C,B,Sun,Rain,2,0,2,0,0,0,0,None,None,
+04-SPRG-5.2,7/1/2014,B,B,Sun,Rain,5,0,5,0,0,3,0,Water Clarity,None,Access
+04-SPRN_T2-1.3,7/2/2014,D,C,Clouds,Rain,1,0,0,0,3,0,2,Odor,Discharge/Pipes,
+04-SPRN_T7-0.1,7/17/2019,D,D,Rain,Rain,7,0,0,0,0,0,2,Water Clarity,Proximity to development roads,Basically a drainage ditch along road
+04-SUGA_T7-1.0,7/29/2009,A,A,Clouds,Sun,0,0,0,0,0,0,0,None,None,
+04-TOML-0.8,7/24/2019,B,A,Sun,Rain,1,0,2,0,2,0,0,Other,None,CAFO facility across the road
+04-UGNS-60.8,7/24/2019,E,E,Sun,Rain,10,10,10,0,0,0,10,Suspended_Phytoplankton,Discharge/Pipes,
+04-WCONI-0.6,7/23/2019,B,B,NA,NA,7,2,3,3,3,0,0,Water Clarity,Macrophyte,
+04-WDIT-0.1,7/24/2019,E,D,Sun,Rain,9,1,0,1,1,0,0,Water Clarity,Other,Mud banks would discourage fishing
+04-WLKI-0.2,7/29/2009,D,C,Rain,Sun,3,0,1,0,0,1,0,Water Clarity,None,Moss
+05-COHO-50.9,8/9/2017,B,B,Sun,Sun,0,0,1,0,0,0,0,None,None,

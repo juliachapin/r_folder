@@ -1,0 +1,64 @@
+---
+title: "Live Coding Quiz 1 2:50 PM, version B"
+author: "Julia Chapin"
+date: "2/17/2021"
+output: word_document
+---
+
+# Instructions
+
+Complete the tasks below. If you get stuck, you may ask your proctor for a hint to get you past the point that you're stuck in, in exchange for a small point deduction. You can do it!
+
+# *Tilia* data description
+
+The data are from the National Phenology Network Data Portal for the tree species *Tilia americana*, or American basswood, in New York. Phenology, temperature, and precipitation data are for the years 2011 to 2020.
+
+# Import data set
+
+```{r}
+tilia <- read.csv("tilia_phenology.csv", header = T)
+```
+
+# Examine first few lines of data frame
+
+```{r}
+head(tilia)
+```
+
+## B Task 1: What are the names of the variables in the dataframe?
+
+(1 point)
+
+```{r}
+
+```
+
+## B Task 2: Make a vector (array) called MaxSumTemp and put the maximum summer temperatures of the dataframe (Tmax_Summer) into it
+
+(1 point)
+
+```{r}
+
+```
+
+## B Task 3: Make a new column in the tilia dataframe called Pheno_Length and put the difference between the last day the phenophase was observed (LastObs_DOY) and the first day (FirstObs_DOY)
+
+(1 point)
+
+```{r}
+
+```
+
+# Task 4
+
+(1 point)
+
+How do you feel about this quiz? On the line below, type your response using the comment formatting so it doesn't show up on the rendered Word document.
+
+# Task 5
+
+(1 point)
+
+Knit this RMD to DOCX, and upload (1) Revised RMD and (2) DOCX to Canvas in the Quiz 1 assignment in the next five minutes.
+
+If you are unable to render your Rmd file into a DOCX because of a problem in a particular code chunk, you may use {r eval = FALSE} instead of {r} for that code chunk. This should skip the chunks with the errors.
